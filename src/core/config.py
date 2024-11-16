@@ -19,6 +19,12 @@ class DatabaseConfig(BaseModel):
         return f"postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}"
 
 
+class EngineConfig(BaseModel):
+    echo: bool
+    pool_size: int
+    max_overflow: int
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(".env.template", ".env"),
@@ -28,6 +34,7 @@ class Settings(BaseSettings):
     )
     run: RunConfig
     db: DatabaseConfig
+    engine: EngineConfig
 
 
 settings = Settings()
