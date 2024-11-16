@@ -25,6 +25,13 @@ class EngineConfig(BaseModel):
     max_overflow: int
 
 
+class JWTConfig(BaseModel):
+    secret_key: str
+    algorithm: str
+    access_token_expiration_minutes: int
+    refresh_token_expiration_days: int
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(".env.template", ".env"),
@@ -35,6 +42,7 @@ class Settings(BaseSettings):
     run: RunConfig
     db: DatabaseConfig
     engine: EngineConfig
+    jwt: JWTConfig
 
 
 settings = Settings()
