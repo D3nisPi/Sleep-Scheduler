@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import time
 from typing import TYPE_CHECKING
 
@@ -19,4 +21,6 @@ class SleepGoalsORM(Base):
     sleep_start: Mapped[time]
     sleep_end: Mapped[time]
 
-    user: Mapped["UsersORM"] = relationship(back_populates="sleep_goal")
+    # FIXME
+    # Removed due to circular import error
+    # user: Mapped["UsersORM"] = relationship("UsersORM", back_populates="sleep_goal")

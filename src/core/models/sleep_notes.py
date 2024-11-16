@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import time, date
 from typing import TYPE_CHECKING
 
@@ -21,4 +23,6 @@ class SleepNotesORM(Base):
     comment: Mapped[str | None] = mapped_column(String(300))
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"))
 
-    user: Mapped["UsersORM"] = relationship(back_populates="sleep_notes")
+    # FIXME
+    # Removed due to circular import error
+    # user: Mapped["UsersORM"] = relationship("UsersORM", back_populates="sleep_notes")

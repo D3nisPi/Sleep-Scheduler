@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from sqlalchemy import String
@@ -19,9 +21,14 @@ class UsersORM(Base):
     password_hash: Mapped[str] = mapped_column(String(120))
     refresh_token_id: Mapped[str | None] = mapped_column(String(32))
 
-    sleep_goal: Mapped["SleepGoalsORM"] = relationship(
-        back_populates="user",
-        cascade="all, delete",
-        passive_deletes=True
-    )
-    sleep_notes: Mapped[list["SleepNotesORM"]] = relationship(back_populates="user", cascade="all, delete")
+    # FIXME
+    # Removed due to circular import error
+    # sleep_goal: Mapped["SleepGoalsORM"] = relationship(
+    #     "SleepGoalsORM",
+    #     back_populates="user",
+    #     cascade="all, delete",
+    #     passive_deletes=True
+    # )
+    # sleep_notes: Mapped[list["SleepNotesORM"]] = relationship("SleepNotesORM",
+    #                                                           back_populates="user",
+    #                                                           cascade="all, delete")
