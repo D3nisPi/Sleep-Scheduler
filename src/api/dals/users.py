@@ -16,3 +16,7 @@ class UsersDAL:
         result = await self.session.execute(query)
         user = result.scalars().first()
         return user
+
+    async def update_user_refresh_token(self, user: UsersORM, jti: str) -> None:
+        user.refresh_token_id = jti
+        await self.session.commit()
