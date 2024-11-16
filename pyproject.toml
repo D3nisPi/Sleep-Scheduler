@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "sleep-scheduler"
+version = "0.1.0"
+description = ""
+authors = ["D3nisPi <d3nis.p1shchik@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.115.5"
+uvicorn = {extras = ["standart"], version = "^0.32.0"}
+sqlalchemy = "^2.0.36"
+pydantic-settings = "^2.6.1"
+asyncpg = "^0.30.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
