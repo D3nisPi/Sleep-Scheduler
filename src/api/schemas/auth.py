@@ -1,12 +1,12 @@
-from pydantic import BaseModel
+from src.api.schemas.base import BaseSchema
 
 
-class LoginRequest(BaseModel):
+class LoginRequest(BaseSchema):
     username: str
     password: str
 
 
-class TokensResponse(BaseModel):
+class TokensResponse(BaseSchema):
     access_token: str
     refresh_token: str
 
