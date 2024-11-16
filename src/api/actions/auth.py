@@ -7,38 +7,33 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.actions.users import get_user_by_username
 from src.api.schemas.auth import LoginRequest, TokensInfo
+from src.api.schemas.users import UserSchema
 from src.core.config import settings
-from src.core.models.users import UsersORM
 
 import jwt
 
 from src.core.session import get_session
 
 
-async def validate_user_by_password(body: LoginRequest,
-                                    session: AsyncSession = Depends(get_session)
-                                    ) -> UsersORM:
-    user = await authenticate_user_by_password(body.username, body.password, session)
+async def authenticate_user_by_password(body: LoginRequest,
+                                        session: AsyncSession = Depends(get_session)
+                                        ) -> UserSchema:
+    credentials_exception = HTTPException(status_code=401, detail="Invalid username or password")
+    user = await get_user_by_username(body.username, session)
     if user is None:
-        raise HTTPException(status_code=404, detail="Invalid username or password")
-    return user
+        raise credentials_exception
+
+    if not bcrypt.checkpw(body.password.encode(), bytes.fromhex(user.password_hash)):
+        raise credentials_exception
+
+    return UserSchema.model_validate(user)
 
 
-async def authenticate_user_by_password(username: str,
-                                        password: str,
-                                        session: AsyncSession
-                                        ) -> UsersORM | None:
-    user = await get_user_by_username(username, session)
-    if user is None:
-        return
-
-    if not bcrypt.checkpw(password.encode(), bytes.fromhex(user.password_hash)):
-        return
-
-    return user
+def get_tokens_for_user(user: UserSchema = Depends(authenticate_user_by_password)) -> TokensInfo:
+    return create_tokens(user)
 
 
-def create_tokens(user: UsersORM) -> TokensInfo:
+def create_tokens(user: UserSchema) -> TokensInfo:
     now = datetime.now(UTC)
     jti = uuid.uuid4().hex
 
