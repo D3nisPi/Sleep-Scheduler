@@ -6,10 +6,10 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.core.models.base import Base
 if TYPE_CHECKING:
-    from src.core.models.users import UsersOrm
+    from src.core.models.users import UsersORM
 
 
-class SleepGoalsOrm(Base):
+class SleepGoalsORM(Base):
     __tablename__ = "sleep_goals"
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id",
@@ -19,4 +19,4 @@ class SleepGoalsOrm(Base):
     sleep_start: Mapped[time]
     sleep_end: Mapped[time]
 
-    user: Mapped["UsersOrm"] = relationship(back_populates="sleep_goal")
+    user: Mapped["UsersORM"] = relationship(back_populates="sleep_goal")
