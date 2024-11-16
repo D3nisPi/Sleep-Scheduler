@@ -7,6 +7,18 @@ class RunConfig(BaseModel):
     port: int
 
 
+class DatabaseConfig(BaseModel):
+    host: str
+    port: int
+    user: str
+    password: str
+    database: str
+
+    @property
+    def url(self):
+        return f"postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}"
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(".env.template", ".env"),
@@ -15,6 +27,7 @@ class Settings(BaseSettings):
         env_prefix="app.",
     )
     run: RunConfig
+    db: DatabaseConfig
 
 
 settings = Settings()
