@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.models.users import UsersORM
@@ -17,6 +17,12 @@ class UsersDAL:
         user = result.scalars().first()
         return user
 
-    async def update_user_refresh_token(self, user: UsersORM, jti: str) -> None:
-        user.refresh_token_id = jti
+    async def update_user_refresh_token_by_id(self, user_id: int, jti: str) -> None:
+        query = (
+            update(UsersORM)
+            .where(UsersORM.id == user_id)
+            .values(refresh_token_id=jti)
+        )
+
+        await self.session.execute(query)
         await self.session.commit()

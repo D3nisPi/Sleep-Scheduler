@@ -11,8 +11,8 @@ async def get_user_by_username(username: str, session: AsyncSession) -> UsersORM
         return user
 
 
-async def update_user_refresh_token(user: UsersORM, jti: str, session: AsyncSession) -> None:
+async def update_user_refresh_token_by_id(user_id: int, jti: str, session: AsyncSession) -> None:
     async with session.begin():
         user_dal = UsersDAL(session)
-        user = await user_dal.update_user_refresh_token(user, jti)
+        user = await user_dal.update_user_refresh_token_by_id(user_id, jti)
         return user
