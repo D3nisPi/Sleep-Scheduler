@@ -7,10 +7,10 @@ from src.api.schemas.auth import TokensResponse, TokensInfo
 from src.core.models.users import UsersORM
 from src.core.session import get_session
 
-auth = APIRouter(prefix='/auth', tags=["Auth"])
+auth_router = APIRouter(prefix='/auth', tags=["Auth"])
 
 
-@auth.post("/login/")
+@auth_router.post("/login/")
 async def login(
     user: UsersORM = Depends(validate_user_by_password),
     token_info: TokensInfo = Depends(create_tokens),
