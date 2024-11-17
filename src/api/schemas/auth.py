@@ -13,3 +13,11 @@ class Tokens(BaseSchema):
 
 class CreatedTokens(Tokens):
     refresh_token_id: str
+
+
+class RefreshTokenPayload(BaseSchema):
+    sub: int
+    exp: int
+    iat: int
+    jti: str
+    type: str
