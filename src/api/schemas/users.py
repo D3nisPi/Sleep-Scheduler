@@ -21,3 +21,8 @@ class UserCreateRequest(BaseSchema):
     username: str = Field(..., max_length=50)
     display_name: str = Field(..., max_length=50)
     password: str = Field(..., max_length=50)
+
+
+class UserUpdateRequest(BaseSchema):
+    username: str | None = Field(None, max_length=50)
+    display_name: str | None = Field(None, max_length=50)
