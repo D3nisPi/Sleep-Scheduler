@@ -1,15 +1,15 @@
 from src.api.schemas.base import BaseSchema
 
 
-class LoginRequest(BaseSchema):
+class LoginData(BaseSchema):
     username: str
     password: str
 
 
-class TokensResponse(BaseSchema):
+class Tokens(BaseSchema):
     access_token: str
     refresh_token: str
 
 
-class TokensInfo(TokensResponse):
-    refresh_jti: str
+class CreatedTokens(Tokens):
+    refresh_token_id: str

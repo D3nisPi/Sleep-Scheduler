@@ -1,24 +1,24 @@
 import uuid
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, UTC
 
 import bcrypt
-from fastapi import Depends, HTTPException
+from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette import status
 
 from src.api.actions.users import get_user_by_username
-from src.api.schemas.auth import LoginRequest, TokensInfo
+from src.api.schemas.auth import LoginData, CreatedTokens
 from src.api.schemas.users import UserSchema
-from src.core.config import settings
-
-import jwt
-
-from src.core.session import get_session
+from src.api.utils.tokens import create_access_token, create_refresh_token
 
 
-async def authenticate_user_by_password(body: LoginRequest,
-                                        session: AsyncSession = Depends(get_session)
+async def authenticate_user_by_password(body: LoginData,
+                                        session: AsyncSession
                                         ) -> UserSchema:
-    credentials_exception = HTTPException(status_code=401, detail="Invalid username or password")
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Invalid username or password"
+    )
     user = await get_user_by_username(body.username, session)
     if user is None:
         raise credentials_exception
@@ -29,44 +29,16 @@ async def authenticate_user_by_password(body: LoginRequest,
     return UserSchema.model_validate(user)
 
 
-def get_tokens_for_user(user: UserSchema = Depends(authenticate_user_by_password)) -> TokensInfo:
-    return create_tokens(user)
-
-
-def create_tokens(user: UserSchema) -> TokensInfo:
+def create_tokens(user: UserSchema) -> CreatedTokens:
     now = datetime.now(UTC)
-    jti = uuid.uuid4().hex
+    refresh_token_id = uuid.uuid4().hex
 
-    access_token = create_token(get_access_token_payload(user.id, user.username, now))
-    refresh_token = create_token(get_refresh_token_payload(user.id, jti, now))
+    access_token = create_access_token(user.id, user.username, now)
+    refresh_token = create_refresh_token(user.id, refresh_token_id, now)
 
-    info = TokensInfo(
+    created_tokens = CreatedTokens(
         access_token=access_token,
         refresh_token=refresh_token,
-        refresh_jti=jti
+        refresh_token_id=refresh_token_id
     )
-    return info
-
-
-def get_access_token_payload(user_id, username, iat: datetime):
-    return {
-        "sub": user_id,
-        "username": username,
-        "exp": iat + timedelta(minutes=settings.jwt.access_token_expiration_minutes),
-        "iat": iat,
-        "type": "access"
-    }
-
-
-def get_refresh_token_payload(user_id, jti: str, iat: datetime):
-    return {
-        "sub": user_id,
-        "exp": iat + timedelta(days=settings.jwt.refresh_token_expiration_days),
-        "iat": iat,
-        "jti": jti,
-        "type": "refresh"
-    }
-
-
-def create_token(payload: dict):
-    return jwt.encode(payload, settings.jwt.secret_key, algorithm=settings.jwt.algorithm)
+    return created_tokens
