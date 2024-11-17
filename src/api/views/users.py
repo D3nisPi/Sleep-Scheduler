@@ -33,9 +33,8 @@ async def get_user(credentials: HTTPAuthorizationCredentials = Depends(http_bear
 async def create_user(body: UserCreateRequest,
                       session: AsyncSession = Depends(get_session)
                       ) -> Response:
-    try:
-        await create_new_user(body, session)
-    except IntegrityError:
+    created = await create_new_user(body, session)
+    if not created:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=f"Database conflict"

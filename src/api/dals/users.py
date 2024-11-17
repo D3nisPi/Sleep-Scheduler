@@ -1,4 +1,5 @@
 from sqlalchemy import select, update, delete
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.models.users import UsersORM
@@ -26,16 +27,20 @@ class UsersDAL:
         user = result.scalars().first()
         return user
 
-    async def create_user(self, username: str, display_name: str, password_hash: str) -> None:
+    async def create_user(self, username: str, display_name: str, password_hash: str) -> bool:
         new_user = UsersORM(
             username=username,
             display_name=display_name,
             password_hash=password_hash,
             refresh_token_id=None
         )
-
-        self.session.add(new_user)
-        await self.session.commit()
+        try:
+            self.session.add(new_user)
+            await self.session.commit()
+            return True
+        except IntegrityError:
+            await self.session.rollback()
+            return False
 
     async def delete_user_by_id(self, user_id: int) -> bool:
         query = (
