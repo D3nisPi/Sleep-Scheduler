@@ -20,13 +20,12 @@ async def get_user_by_username(username: str, session: AsyncSession) -> UsersORM
         return user
 
 
-async def create_new_user(body: UserCreateRequest, session: AsyncSession) -> bool:
+async def create_new_user(body: UserCreateRequest, session: AsyncSession) -> None:
     password_hash = hash_password(body.password)
 
     async with session.begin():
         user_dal = UsersDAL(session)
-        created = await user_dal.create_user(body.username, body.display_name, password_hash)
-        return created
+        await user_dal.create_user(body.username, body.display_name, password_hash)
 
 
 async def delete_user_by_id(user_id: int, session: AsyncSession) -> bool:
