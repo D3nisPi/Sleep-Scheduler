@@ -21,3 +21,11 @@ class RefreshTokenPayload(BaseSchema):
     iat: int
     jti: str
     type: str
+
+
+class AccessTokenPayload(BaseSchema):
+    sub: int
+    username: str
+    exp: int
+    iat: int
+    type: str
