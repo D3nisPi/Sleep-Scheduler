@@ -28,6 +28,13 @@ async def create_new_user(body: UserCreateRequest, session: AsyncSession) -> Non
         await user_dal.create_user(body.username, body.display_name, password_hash)
 
 
+async def delete_user_by_id(user_id: int, session: AsyncSession) -> bool:
+    async with session.begin():
+        user_dal = UsersDAL(session)
+        deleted = await user_dal.delete_user_by_id(user_id)
+        return deleted
+
+
 async def update_user_refresh_token_by_id(user_id: int, jti: str | None, session: AsyncSession) -> None:
     async with session.begin():
         user_dal = UsersDAL(session)
