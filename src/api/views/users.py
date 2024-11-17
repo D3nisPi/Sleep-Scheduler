@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 from fastapi.security import HTTPAuthorizationCredentials
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from src.api.actions.users import get_user_by_id
-from src.api.schemas.users import UserReadResponse
+from src.api.actions.users import get_user_by_id, create_new_user
+from src.api.schemas.users import UserReadResponse, UserCreateRequest
 from src.api.utils.tokens import decode_access_token
 from src.api.views import http_bearer
 from src.core.session import get_session
@@ -26,3 +27,18 @@ async def get_user(credentials: HTTPAuthorizationCredentials = Depends(http_bear
         )
 
     return UserReadResponse.model_validate(user)
+
+
+@users_router.post("/")
+async def create_user(body: UserCreateRequest,
+                      session: AsyncSession = Depends(get_session)
+                      ) -> Response:
+    try:
+        await create_new_user(body, session)
+    except IntegrityError:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Database conflict"
+        )
+
+    return Response(status_code=status.HTTP_201_CREATED)
