@@ -36,6 +36,13 @@ async def delete_user_by_id(user_id: int, session: AsyncSession) -> bool:
         return deleted
 
 
+async def update_user_by_id(user_id: int, updated_params: dict, session: AsyncSession) -> bool:
+    async with session.begin():
+        user_dal = UsersDAL(session)
+        updated = await user_dal.update_user_by_id(user_id, **updated_params)
+        return updated
+
+
 async def update_user_refresh_token_by_id(user_id: int, jti: str | None, session: AsyncSession) -> None:
     async with session.begin():
         user_dal = UsersDAL(session)

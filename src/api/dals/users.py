@@ -53,6 +53,17 @@ class UsersDAL:
 
         return bool(res.scalars().first())
 
+    async def update_user_by_id(self, user_id: int, **updated_params) -> bool:
+        query = (
+            update(UsersORM)
+            .where(UsersORM.id == user_id)
+            .values(updated_params)
+            .returning(UsersORM.id)
+        )
+        res = await self.session.execute(query)
+        await self.session.commit()
+        return bool(res.scalars().first())
+
     async def update_user_refresh_token_by_id(self, user_id: int, jti: str | None) -> None:
         query = (
             update(UsersORM)
