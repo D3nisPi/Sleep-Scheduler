@@ -4,8 +4,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from src.api.actions.users import get_user_by_id, create_new_user, delete_user_by_id
-from src.api.schemas.users import UserReadResponse, UserCreateRequest
+from src.api.actions.users import get_user_by_id, create_new_user, delete_user_by_id, update_user_by_id
+from src.api.schemas.users import UserReadResponse, UserCreateRequest, UserUpdateRequest
 from src.api.utils.tokens import decode_access_token
 from src.api.views import http_bearer
 from src.core.session import get_session
@@ -54,6 +54,35 @@ async def delete_user(credentials: HTTPAuthorizationCredentials = Depends(http_b
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found"
+        )
+
+    return Response(status_code=status.HTTP_200_OK)
+
+
+@users_router.patch("/")
+async def update_user(body: UserUpdateRequest,
+                      credentials: HTTPAuthorizationCredentials = Depends(http_bearer),
+                      session: AsyncSession = Depends(get_session)
+                      ) -> Response:
+    token = credentials.credentials
+    payload = decode_access_token(token)
+    updated_user_params = body.model_dump(exclude_none=True)
+    if not updated_user_params:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="At least one specified parameter for user update should be provided",
+        )
+    try:
+        updated = await update_user_by_id(payload.sub, updated_user_params, session)
+        if not updated:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+    except IntegrityError:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Database conflict"
         )
 
     return Response(status_code=status.HTTP_200_OK)
