@@ -14,3 +14,8 @@ class UserReadResponse(BaseSchema):
     username: str
     display_name: str
 
+
+class UserCreateRequest(BaseSchema):
+    username: str
+    display_name: str
+    password: str
