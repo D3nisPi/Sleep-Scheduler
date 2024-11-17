@@ -4,7 +4,7 @@ import jwt
 from fastapi import HTTPException
 from starlette import status
 
-from src.api.schemas.auth import RefreshTokenPayload
+from src.api.schemas.auth import RefreshTokenPayload, AccessTokenPayload
 from src.core.config import settings
 
 
@@ -55,6 +55,17 @@ def decode_token(token: str) -> dict:
         raise malformed_token
     except jwt.InvalidTokenError:
         raise invalid_token
+
+    return payload
+
+
+def decode_access_token(token: str) -> AccessTokenPayload:
+    payload = AccessTokenPayload(**decode_token(token))
+    if payload.type != "access":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid token type. Expected: 'access'"
+        )
 
     return payload
 
