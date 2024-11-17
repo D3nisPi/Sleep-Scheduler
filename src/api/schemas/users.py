@@ -1,3 +1,5 @@
+from pydantic import Field
+
 from src.api.schemas.base import BaseSchema
 
 
@@ -16,6 +18,6 @@ class UserReadResponse(BaseSchema):
 
 
 class UserCreateRequest(BaseSchema):
-    username: str
-    display_name: str
-    password: str
+    username: str = Field(..., max_length=50)
+    display_name: str = Field(..., max_length=50)
+    password: str = Field(..., max_length=50)
