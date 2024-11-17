@@ -26,6 +26,17 @@ class UsersDAL:
         user = result.scalars().first()
         return user
 
+    async def create_user(self, username: str, display_name: str, password_hash: str) -> None:
+        new_user = UsersORM(
+            username=username,
+            display_name=display_name,
+            password_hash=password_hash,
+            refresh_token_id=None
+        )
+
+        self.session.add(new_user)
+        await self.session.commit()
+
     async def update_user_refresh_token_by_id(self, user_id: int, jti: str | None) -> None:
         query = (
             update(UsersORM)
