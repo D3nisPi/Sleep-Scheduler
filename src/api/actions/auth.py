@@ -1,7 +1,6 @@
 import uuid
 from datetime import datetime, UTC
 
-import bcrypt
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
@@ -9,6 +8,7 @@ from starlette import status
 from src.api.actions.users import get_user_by_username, get_user_by_id
 from src.api.schemas.auth import LoginData, CreatedTokens
 from src.api.schemas.users import UserSchema
+from src.api.utils.passwords import validate_password
 from src.api.utils.tokens import create_access_token, create_refresh_token, decode_refresh_token
 
 
@@ -23,7 +23,7 @@ async def authenticate_user_by_password(body: LoginData,
     if user is None:
         raise credentials_exception
 
-    if not bcrypt.checkpw(body.password.encode(), bytes.fromhex(user.password_hash)):
+    if not validate_password(body.password, user.password_hash):
         raise credentials_exception
 
     return UserSchema.model_validate(user)
