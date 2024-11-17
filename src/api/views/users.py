@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from src.api.actions.users import get_user_by_id, create_new_user
+from src.api.actions.users import get_user_by_id, create_new_user, delete_user_by_id
 from src.api.schemas.users import UserReadResponse, UserCreateRequest
 from src.api.utils.tokens import decode_access_token
 from src.api.views import http_bearer
@@ -42,3 +42,19 @@ async def create_user(body: UserCreateRequest,
         )
 
     return Response(status_code=status.HTTP_201_CREATED)
+
+
+@users_router.delete("/")
+async def delete_user(credentials: HTTPAuthorizationCredentials = Depends(http_bearer),
+                      session: AsyncSession = Depends(get_session)
+                      ) -> Response:
+    token = credentials.credentials
+    payload = decode_access_token(token)
+    deleted = await delete_user_by_id(payload.sub, session)
+    if not deleted:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+
+    return Response(status_code=status.HTTP_200_OK)
