@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 import jwt
 from fastapi import HTTPException
+from pydantic import ValidationError
 from starlette import status
 
 from src.api.schemas.auth import RefreshTokenPayload, AccessTokenPayload
@@ -50,8 +51,7 @@ def decode_token(token: str) -> dict:
         payload = jwt.decode(token, settings.jwt.secret_key, algorithms=[settings.jwt.algorithm])
     except jwt.InvalidSignatureError:
         raise invalid_token
-    except jwt.DecodeError as e:
-        print(e)
+    except jwt.DecodeError:
         raise malformed_token
     except jwt.InvalidTokenError:
         raise invalid_token
@@ -60,7 +60,14 @@ def decode_token(token: str) -> dict:
 
 
 def decode_access_token(token: str) -> AccessTokenPayload:
-    payload = AccessTokenPayload(**decode_token(token))
+    token_data = decode_token(token)
+    try:
+        payload = AccessTokenPayload(**token_data)
+    except ValidationError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid token data"
+        )
     if payload.type != "access":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -71,7 +78,14 @@ def decode_access_token(token: str) -> AccessTokenPayload:
 
 
 def decode_refresh_token(token: str) -> RefreshTokenPayload:
-    payload = RefreshTokenPayload(**decode_token(token))
+    token_data = decode_token(token)
+    try:
+        payload = RefreshTokenPayload(**token_data)
+    except ValidationError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid token data"
+        )
     if payload.type != "refresh":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
