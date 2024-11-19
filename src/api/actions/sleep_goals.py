@@ -8,7 +8,9 @@ async def get_sleep_goal_by_user_id(user_id: int, session: AsyncSession) -> Slee
     async with session.begin():
         sleep_goal_dal = SleepGoalDAL(session)
         sleep_goal = await sleep_goal_dal.get_sleep_goal_by_user_id(user_id)
-        return sleep_goal or SleepGoalSchema.model_validate(sleep_goal)
+        if sleep_goal is None:
+            return
+        return SleepGoalSchema.model_validate(sleep_goal)
 
 
 async def create_new_user(user_id, body: SleepGoalCreateRequest, session: AsyncSession) -> None:

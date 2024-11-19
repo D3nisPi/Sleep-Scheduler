@@ -9,14 +9,18 @@ async def get_user_by_id(user_id: int, session: AsyncSession) -> UserSchema | No
     async with session.begin():
         user_dal = UsersDAL(session)
         user = await user_dal.get_user_by_id(user_id)
-        return user or UserSchema.model_validate(user)
+        if user is None:
+            return
+        return UserSchema.model_validate(user)
 
 
 async def get_user_by_username(username: str, session: AsyncSession) -> UserSchema | None:
     async with session.begin():
         user_dal = UsersDAL(session)
         user = await user_dal.get_user_by_username(username)
-        return user or UserSchema.model_validate(user)
+        if user is None:
+            return
+        return UserSchema.model_validate(user)
 
 
 async def create_new_user(body: UserCreateRequest, session: AsyncSession) -> None:
