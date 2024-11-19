@@ -38,3 +38,10 @@ def register_exception_handlers(app: FastAPI):
             content=response.model_dump(),
             status_code=status.HTTP_409_CONFLICT
         )
+
+    @app.exception_handler(OSError)
+    async def os_error_handler(request: Request, e: OSError) -> JSONResponse:
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={"detail": "Database is unavailable"},
+        )
