@@ -1,23 +1,22 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.dals.users import UsersDAL
-from src.api.schemas.users import UserCreateRequest
+from src.api.schemas.users import UserCreateRequest, UserSchema
 from src.api.utils.passwords import hash_password
-from src.core.models.users import UsersORM
 
 
-async def get_user_by_id(user_id: int, session: AsyncSession) -> UsersORM | None:
+async def get_user_by_id(user_id: int, session: AsyncSession) -> UserSchema | None:
     async with session.begin():
         user_dal = UsersDAL(session)
         user = await user_dal.get_user_by_id(user_id)
-        return user
+        return user or UserSchema.model_validate(user)
 
 
-async def get_user_by_username(username: str, session: AsyncSession) -> UsersORM | None:
+async def get_user_by_username(username: str, session: AsyncSession) -> UserSchema | None:
     async with session.begin():
         user_dal = UsersDAL(session)
         user = await user_dal.get_user_by_username(username)
-        return user
+        return user or UserSchema.model_validate(user)
 
 
 async def create_new_user(body: UserCreateRequest, session: AsyncSession) -> None:
@@ -45,5 +44,4 @@ async def update_user_by_id(user_id: int, updated_params: dict, session: AsyncSe
 async def update_user_refresh_token_by_id(user_id: int, jti: str | None, session: AsyncSession) -> None:
     async with session.begin():
         user_dal = UsersDAL(session)
-        user = await user_dal.update_user_refresh_token_by_id(user_id, jti)
-        return user
+        await user_dal.update_user_refresh_token_by_id(user_id, jti)
