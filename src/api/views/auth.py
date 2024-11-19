@@ -1,18 +1,40 @@
 from fastapi import APIRouter, Depends
 from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette import status
+from starlette.status import (
+    HTTP_201_CREATED,
+    HTTP_401_UNAUTHORIZED,
+    HTTP_503_SERVICE_UNAVAILABLE,
+    HTTP_404_NOT_FOUND,
+    HTTP_400_BAD_REQUEST
+)
 
 from src.api.actions.auth import authenticate_user_by_password, create_tokens, authenticate_user_by_refresh_token
 from src.api.actions.users import update_user_refresh_token_by_id
 from src.api.schemas.auth import Tokens, LoginData
+from src.api.schemas.errors import CommonErrorResponse
 from src.api.views import http_bearer
 from src.core.session import get_session
 
 auth_router = APIRouter(prefix='/auth', tags=["Auth"])
 
+login_responses = {
+    HTTP_201_CREATED: {"model": Tokens, "description": "Successful Response"},
+    HTTP_400_BAD_REQUEST: {"model": CommonErrorResponse, "description": "Bad request"},
+    HTTP_401_UNAUTHORIZED: {"model": CommonErrorResponse, "description": "Unauthorized"},
+    HTTP_503_SERVICE_UNAVAILABLE: {"model": CommonErrorResponse, "description": "Database connection problems"}
+}
 
-@auth_router.post("/login/", response_model=Tokens, status_code=status.HTTP_201_CREATED)
+refresh_responses = {
+    HTTP_201_CREATED: {"model": Tokens, "description": "Successful Response"},
+    HTTP_400_BAD_REQUEST: {"model": CommonErrorResponse, "description": "Bad request"},
+    HTTP_401_UNAUTHORIZED: {"model": CommonErrorResponse, "description": "Unauthorized"},
+    HTTP_404_NOT_FOUND: {"model": CommonErrorResponse, "description": "User not found"},
+    HTTP_503_SERVICE_UNAVAILABLE: {"model": CommonErrorResponse, "description": "Database connection problems"}
+}
+
+
+@auth_router.post("/login/", response_model=Tokens, status_code=HTTP_201_CREATED, responses=login_responses)
 async def login(body: LoginData,
                 session: AsyncSession = Depends(get_session)
                 ) -> Tokens:
@@ -25,7 +47,7 @@ async def login(body: LoginData,
     )
 
 
-@auth_router.post("/refresh/", response_model=Tokens, status_code=status.HTTP_201_CREATED)
+@auth_router.post("/refresh/", response_model=Tokens, status_code=HTTP_201_CREATED, responses=refresh_responses)
 async def refresh_token(credentials: HTTPAuthorizationCredentials = Depends(http_bearer),
                         session: AsyncSession = Depends(get_session)
                         ) -> Tokens:
