@@ -1,4 +1,6 @@
-from time import time
+from datetime import time
+
+from pydantic import Field
 
 from src.api.schemas.base import BaseSchema
 
@@ -12,3 +14,13 @@ class SleepGoalSchema(BaseSchema):
 class SleepGoalCreateRequest(BaseSchema):
     sleep_start: time
     sleep_end: time
+
+
+class SleepGoalReadResponse(BaseSchema):
+    sleep_start: time
+    sleep_end: time
+
+
+class SleepGoalUpdateRequest(BaseSchema):
+    sleep_start: time | None = Field(None)
+    sleep_end: time | None = Field(None)
