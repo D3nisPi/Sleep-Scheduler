@@ -29,5 +29,5 @@ async def delete_sleep_goal_by_id(user_id: int, session: AsyncSession) -> bool:
 async def update_sleep_goal_by_id(user_id: int, updated_params: dict, session: AsyncSession) -> bool:
     async with session.begin():
         sleep_goal_dal = SleepGoalDAL(session)
-        updated = await sleep_goal_dal.update_sleep_goal_by_user_id(user_id, **updated_params)
+        updated = await sleep_goal_dal.update_sleep_goal_by_user_id(user_id, updated_params)
         return updated

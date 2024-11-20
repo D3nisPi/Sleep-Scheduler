@@ -69,22 +69,22 @@ class SleepNoteDAL:
 
         return bool(res.scalars().first())
 
-    async def update_sleep_note_by_id_and_user_id(self, note_id: int, user_id: int, **updated_params) -> bool:
+    async def update_sleep_note_by_id_and_user_id(self, note_id: int, user_id: int, updated_params: dict) -> bool:
         query = (
             update(SleepNotesORM)
             .where(and_(SleepNotesORM.id == note_id, SleepNotesORM.user_id == user_id))
-            .values(updated_params)
+            .values(**updated_params)
             .returning(SleepNotesORM.user_id)
         )
         res = await self.session.execute(query)
         await self.session.commit()
         return bool(res.scalars().first())
 
-    async def update_sleep_note_by_date_and_user_id(self, nt_date: date, user_id: int, **updated_params) -> bool:
+    async def update_sleep_note_by_date_and_user_id(self, note_date: date, user_id: int, updated_params: dict) -> bool:
         query = (
             update(SleepNotesORM)
-            .where(and_(SleepNotesORM.note_date == nt_date, SleepNotesORM.user_id == user_id))
-            .values(updated_params)
+            .where(and_(SleepNotesORM.note_date == note_date, SleepNotesORM.user_id == user_id))
+            .values(**updated_params)
             .returning(SleepNotesORM.user_id)
         )
         res = await self.session.execute(query)

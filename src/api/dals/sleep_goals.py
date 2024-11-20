@@ -39,11 +39,11 @@ class SleepGoalDAL:
 
         return bool(res.scalars().first())
 
-    async def update_sleep_goal_by_user_id(self, user_id: int, **updated_params) -> bool:
+    async def update_sleep_goal_by_user_id(self, user_id: int, updated_params: dict) -> bool:
         query = (
             update(SleepGoalsORM)
             .where(SleepGoalsORM.user_id == user_id)
-            .values(updated_params)
+            .values(**updated_params)
             .returning(SleepGoalsORM.user_id)
         )
         res = await self.session.execute(query)

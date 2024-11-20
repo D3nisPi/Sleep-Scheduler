@@ -64,7 +64,7 @@ async def update_sleep_note_by_id_and_user_id(note_id: int,
                                               ) -> bool:
     async with session.begin():
         sleep_note_dal = SleepNoteDAL(session)
-        updated = await sleep_note_dal.update_sleep_note_by_id_and_user_id(note_id, user_id, **updated_params)
+        updated = await sleep_note_dal.update_sleep_note_by_id_and_user_id(note_id, user_id, updated_params)
         return updated
 
 
@@ -75,5 +75,5 @@ async def update_sleep_note_by_date_and_user_id(note_date: date,
                                                 ) -> bool:
     async with session.begin():
         sleep_note_dal = SleepNoteDAL(session)
-        updated = await sleep_note_dal.update_sleep_note_by_date_and_user_id(note_date, user_id, **updated_params)
+        updated = await sleep_note_dal.update_sleep_note_by_date_and_user_id(note_date, user_id, updated_params)
         return updated

@@ -47,11 +47,11 @@ class UsersDAL:
 
         return bool(res.scalars().first())
 
-    async def update_user_by_id(self, user_id: int, **updated_params) -> bool:
+    async def update_user_by_id(self, user_id: int, updated_params: dict) -> bool:
         query = (
             update(UsersORM)
             .where(UsersORM.id == user_id)
-            .values(updated_params)
+            .values(**updated_params)
             .returning(UsersORM.id)
         )
         res = await self.session.execute(query)

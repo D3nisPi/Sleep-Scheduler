@@ -41,7 +41,7 @@ async def delete_user_by_id(user_id: int, session: AsyncSession) -> bool:
 async def update_user_by_id(user_id: int, updated_params: dict, session: AsyncSession) -> bool:
     async with session.begin():
         user_dal = UsersDAL(session)
-        updated = await user_dal.update_user_by_id(user_id, **updated_params)
+        updated = await user_dal.update_user_by_id(user_id, updated_params)
         return updated
 
 
