@@ -13,20 +13,20 @@ async def get_sleep_goal_by_user_id(user_id: int, session: AsyncSession) -> Slee
         return SleepGoalSchema.model_validate(sleep_goal)
 
 
-async def create_new_user(user_id, body: SleepGoalCreateRequest, session: AsyncSession) -> None:
+async def create_new_sleep_goal(user_id, body: SleepGoalCreateRequest, session: AsyncSession) -> None:
     async with session.begin():
         sleep_goal_dal = SleepGoalDAL(session)
         await sleep_goal_dal.create_sleep_goal(user_id, body.sleep_start, body.sleep_end)
 
 
-async def delete_user_by_id(user_id: int, session: AsyncSession) -> bool:
+async def delete_sleep_goal_by_id(user_id: int, session: AsyncSession) -> bool:
     async with session.begin():
         sleep_goal_dal = SleepGoalDAL(session)
         deleted = await sleep_goal_dal.delete_sleep_goal_by_id(user_id)
         return deleted
 
 
-async def update_user_by_id(user_id: int, updated_params: dict, session: AsyncSession) -> bool:
+async def update_sleep_goal_by_id(user_id: int, updated_params: dict, session: AsyncSession) -> bool:
     async with session.begin():
         sleep_goal_dal = SleepGoalDAL(session)
         updated = await sleep_goal_dal.update_sleep_goal_by_user_id(user_id, **updated_params)
