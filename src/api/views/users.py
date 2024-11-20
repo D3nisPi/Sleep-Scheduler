@@ -7,46 +7,64 @@ from starlette.status import (
     HTTP_400_BAD_REQUEST,
     HTTP_404_NOT_FOUND,
     HTTP_409_CONFLICT,
-    HTTP_503_SERVICE_UNAVAILABLE
+    HTTP_503_SERVICE_UNAVAILABLE,
+    HTTP_401_UNAUTHORIZED
 )
 
 from src.api.actions.users import get_user_by_id, create_new_user, delete_user_by_id, update_user_by_id
-from src.api.schemas.errors import DatabaseErrorResponse, CommonErrorResponse
 from src.api.schemas.users import UserReadResponse, UserCreateRequest, UserUpdateRequest
 from src.api.utils.tokens import decode_access_token
-from src.api.views import http_bearer, user_not_found, no_parameters
+from src.api.views import (
+    http_bearer,
+    user_not_found,
+    no_parameters,
+    no_database_connection_info,
+    database_conflict_info,
+    bad_request_info,
+    user_not_found_info,
+    no_body_successful_201_info,
+    no_body_successful_200_info,
+    unauthorized_info
+)
 from src.core.session import get_session
 
 users_router = APIRouter(prefix='/users', tags=["Users"])
 
+successful_user_read_info = {"model": UserReadResponse, "description": "Successful Response"}
+
 get_user_responses = {
-    HTTP_200_OK: {"model": UserReadResponse, "description": "Successful Response"},
-    HTTP_404_NOT_FOUND: {"model": CommonErrorResponse, "description": "User not found"},
-    HTTP_503_SERVICE_UNAVAILABLE: {"model": CommonErrorResponse, "description": "Database connection problems"}
+    HTTP_200_OK: successful_user_read_info,
+    HTTP_400_BAD_REQUEST: bad_request_info,
+    HTTP_401_UNAUTHORIZED: unauthorized_info,
+    HTTP_404_NOT_FOUND: user_not_found,
+    HTTP_503_SERVICE_UNAVAILABLE: no_database_connection_info
 }
 
 create_user_responses = {
-    HTTP_201_CREATED: {"description": "Successful Response"},
-    HTTP_409_CONFLICT: {"model": DatabaseErrorResponse, "description": "Database conflict"},
-    HTTP_503_SERVICE_UNAVAILABLE: {"model": CommonErrorResponse, "description": "Database connection problems"}
+    HTTP_201_CREATED: no_body_successful_201_info,
+    HTTP_409_CONFLICT: database_conflict_info,
+    HTTP_503_SERVICE_UNAVAILABLE: no_database_connection_info
 }
 
 delete_user_responses = {
-    HTTP_200_OK: {"description": "Successful Response"},
-    HTTP_404_NOT_FOUND: {"model": CommonErrorResponse, "description": "User not found"},
-    HTTP_503_SERVICE_UNAVAILABLE: {"model": CommonErrorResponse, "description": "Database connection problems"}
+    HTTP_200_OK: no_body_successful_200_info,
+    HTTP_400_BAD_REQUEST: bad_request_info,
+    HTTP_401_UNAUTHORIZED: unauthorized_info,
+    HTTP_404_NOT_FOUND: user_not_found_info,
+    HTTP_503_SERVICE_UNAVAILABLE: no_database_connection_info
 }
 
 update_user_responses = {
-    HTTP_200_OK: {"description": "Successful Response"},
-    HTTP_400_BAD_REQUEST: {"model": CommonErrorResponse, "description": "No parameters to update were given"},
-    HTTP_404_NOT_FOUND: {"model": CommonErrorResponse, "description": "User not found"},
-    HTTP_409_CONFLICT: {"model": DatabaseErrorResponse, "description": "Database conflict"},
-    HTTP_503_SERVICE_UNAVAILABLE: {"model": CommonErrorResponse, "description": "Database connection problems"}
+    HTTP_200_OK: no_body_successful_200_info,
+    HTTP_400_BAD_REQUEST: bad_request_info,
+    HTTP_401_UNAUTHORIZED: unauthorized_info,
+    HTTP_404_NOT_FOUND: user_not_found_info,
+    HTTP_409_CONFLICT: database_conflict_info,
+    HTTP_503_SERVICE_UNAVAILABLE: no_database_connection_info
 }
 
 
-@users_router.get("/", status_code=HTTP_200_OK, responses=get_user_responses)
+@users_router.get("/", status_code=HTTP_200_OK, response_model=UserReadResponse, responses=get_user_responses)
 async def get_user(credentials: HTTPAuthorizationCredentials = Depends(http_bearer),
                    session: AsyncSession = Depends(get_session)
                    ) -> UserReadResponse:

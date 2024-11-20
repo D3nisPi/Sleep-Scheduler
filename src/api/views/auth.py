@@ -12,25 +12,34 @@ from starlette.status import (
 from src.api.actions.auth import authenticate_user_by_password, create_tokens, authenticate_user_by_refresh_token
 from src.api.actions.users import update_user_refresh_token_by_id
 from src.api.schemas.auth import Tokens, LoginData
-from src.api.schemas.errors import CommonErrorResponse
-from src.api.views import http_bearer
+from src.api.views import (
+    http_bearer,
+    bad_request_info,
+    no_database_connection_info,
+    unauthorized_info,
+    user_not_found_info
+)
 from src.core.session import get_session
 
 auth_router = APIRouter(prefix='/auth', tags=["Auth"])
 
+successful_login_info = {"model": Tokens, "description": "Successful Response"}
+successful_refresh_info = {"model": Tokens, "description": "Successful Response"}
+
 login_responses = {
-    HTTP_201_CREATED: {"model": Tokens, "description": "Successful Response"},
-    HTTP_400_BAD_REQUEST: {"model": CommonErrorResponse, "description": "Bad request"},
-    HTTP_401_UNAUTHORIZED: {"model": CommonErrorResponse, "description": "Unauthorized"},
-    HTTP_503_SERVICE_UNAVAILABLE: {"model": CommonErrorResponse, "description": "Database connection problems"}
+    HTTP_201_CREATED: successful_login_info,
+    HTTP_400_BAD_REQUEST: bad_request_info,
+    HTTP_401_UNAUTHORIZED: unauthorized_info,
+    HTTP_404_NOT_FOUND: user_not_found_info,
+    HTTP_503_SERVICE_UNAVAILABLE: no_database_connection_info
 }
 
 refresh_responses = {
-    HTTP_201_CREATED: {"model": Tokens, "description": "Successful Response"},
-    HTTP_400_BAD_REQUEST: {"model": CommonErrorResponse, "description": "Bad request"},
-    HTTP_401_UNAUTHORIZED: {"model": CommonErrorResponse, "description": "Unauthorized"},
-    HTTP_404_NOT_FOUND: {"model": CommonErrorResponse, "description": "User not found"},
-    HTTP_503_SERVICE_UNAVAILABLE: {"model": CommonErrorResponse, "description": "Database connection problems"}
+    HTTP_201_CREATED: successful_refresh_info,
+    HTTP_400_BAD_REQUEST: bad_request_info,
+    HTTP_401_UNAUTHORIZED: unauthorized_info,
+    HTTP_404_NOT_FOUND: user_not_found_info,
+    HTTP_503_SERVICE_UNAVAILABLE: no_database_connection_info
 }
 
 
