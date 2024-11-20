@@ -6,7 +6,6 @@ from starlette.status import (
 )
 
 from src.api.schemas.errors import CommonErrorResponse, DatabaseErrorResponse
-from src.api.views.users import successful_user_read_info
 
 http_bearer = HTTPBearer()
 
