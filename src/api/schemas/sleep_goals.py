@@ -22,5 +22,5 @@ class SleepGoalReadResponse(BaseSchema):
 
 
 class SleepGoalUpdateRequest(BaseSchema):
-    sleep_start: time | None = Field(None)
-    sleep_end: time | None = Field(None)
+    sleep_start: time = Field(None)
+    sleep_end: time = Field(None)

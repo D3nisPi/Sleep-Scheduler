@@ -24,5 +24,5 @@ class UserCreateRequest(BaseSchema):
 
 
 class UserUpdateRequest(BaseSchema):
-    username: str | None = Field(None, max_length=50)
-    display_name: str | None = Field(None, max_length=50)
+    username: str = Field(None, max_length=50)
+    display_name: str = Field(None, max_length=50)

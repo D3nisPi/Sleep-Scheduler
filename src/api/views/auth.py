@@ -6,7 +6,8 @@ from starlette.status import (
     HTTP_401_UNAUTHORIZED,
     HTTP_503_SERVICE_UNAVAILABLE,
     HTTP_404_NOT_FOUND,
-    HTTP_400_BAD_REQUEST
+    HTTP_400_BAD_REQUEST,
+    HTTP_403_FORBIDDEN
 )
 
 from src.api.actions.auth import authenticate_user_by_password, create_tokens, authenticate_user_by_refresh_token
@@ -17,7 +18,8 @@ from src.api.views import (
     bad_request_info,
     no_database_connection_info,
     unauthorized_info,
-    user_not_found_info
+    user_not_found_info,
+    forbidden_info
 )
 from src.core.session import get_session
 
@@ -38,6 +40,7 @@ refresh_responses = {
     HTTP_201_CREATED: successful_refresh_info,
     HTTP_400_BAD_REQUEST: bad_request_info,
     HTTP_401_UNAUTHORIZED: unauthorized_info,
+    HTTP_403_FORBIDDEN: forbidden_info,
     HTTP_404_NOT_FOUND: user_not_found_info,
     HTTP_503_SERVICE_UNAVAILABLE: no_database_connection_info
 }

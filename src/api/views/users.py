@@ -8,7 +8,8 @@ from starlette.status import (
     HTTP_404_NOT_FOUND,
     HTTP_409_CONFLICT,
     HTTP_503_SERVICE_UNAVAILABLE,
-    HTTP_401_UNAUTHORIZED
+    HTTP_401_UNAUTHORIZED,
+    HTTP_403_FORBIDDEN
 )
 
 from src.api.actions.users import get_user_by_id, create_new_user, delete_user_by_id, update_user_by_id
@@ -24,7 +25,8 @@ from src.api.views import (
     user_not_found_info,
     no_body_successful_201_info,
     no_body_successful_200_info,
-    unauthorized_info
+    unauthorized_info,
+    forbidden_info
 )
 from src.core.session import get_session
 
@@ -36,7 +38,8 @@ get_user_responses = {
     HTTP_200_OK: successful_user_read_info,
     HTTP_400_BAD_REQUEST: bad_request_info,
     HTTP_401_UNAUTHORIZED: unauthorized_info,
-    HTTP_404_NOT_FOUND: user_not_found,
+    HTTP_403_FORBIDDEN: forbidden_info,
+    HTTP_404_NOT_FOUND: user_not_found_info,
     HTTP_503_SERVICE_UNAVAILABLE: no_database_connection_info
 }
 
@@ -50,6 +53,7 @@ delete_user_responses = {
     HTTP_200_OK: no_body_successful_200_info,
     HTTP_400_BAD_REQUEST: bad_request_info,
     HTTP_401_UNAUTHORIZED: unauthorized_info,
+    HTTP_403_FORBIDDEN: forbidden_info,
     HTTP_404_NOT_FOUND: user_not_found_info,
     HTTP_503_SERVICE_UNAVAILABLE: no_database_connection_info
 }
@@ -58,6 +62,7 @@ update_user_responses = {
     HTTP_200_OK: no_body_successful_200_info,
     HTTP_400_BAD_REQUEST: bad_request_info,
     HTTP_401_UNAUTHORIZED: unauthorized_info,
+    HTTP_403_FORBIDDEN: forbidden_info,
     HTTP_404_NOT_FOUND: user_not_found_info,
     HTTP_409_CONFLICT: database_conflict_info,
     HTTP_503_SERVICE_UNAVAILABLE: no_database_connection_info
@@ -105,7 +110,7 @@ async def update_user(body: UserUpdateRequest,
                       ) -> Response:
     token = credentials.credentials
     payload = decode_access_token(token)
-    updated_user_params = body.model_dump(exclude_none=True)
+    updated_user_params = body.model_dump(exclude_unset=True)
     if not updated_user_params:
         raise no_parameters
 

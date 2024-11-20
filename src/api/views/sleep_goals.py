@@ -7,7 +7,9 @@ from starlette.status import (
     HTTP_400_BAD_REQUEST,
     HTTP_404_NOT_FOUND,
     HTTP_409_CONFLICT,
-    HTTP_503_SERVICE_UNAVAILABLE, HTTP_401_UNAUTHORIZED
+    HTTP_503_SERVICE_UNAVAILABLE,
+    HTTP_401_UNAUTHORIZED,
+    HTTP_403_FORBIDDEN
 )
 
 from src.api.actions.sleep_goals import (
@@ -28,7 +30,8 @@ from src.api.views import (
     no_body_successful_200_info,
     no_body_successful_201_info,
     bad_request_info,
-    unauthorized_info
+    unauthorized_info,
+    forbidden_info
 )
 from src.core.session import get_session
 
@@ -41,6 +44,7 @@ get_sleep_goal_responses = {
     HTTP_200_OK: successful_sleep_goal_read_info,
     HTTP_400_BAD_REQUEST: bad_request_info,
     HTTP_401_UNAUTHORIZED: unauthorized_info,
+    HTTP_403_FORBIDDEN: forbidden_info,
     HTTP_404_NOT_FOUND: sleep_goal_not_found_info,
     HTTP_503_SERVICE_UNAVAILABLE: no_database_connection_info
 }
@@ -49,6 +53,7 @@ create_sleep_goal_responses = {
     HTTP_201_CREATED: no_body_successful_201_info,
     HTTP_400_BAD_REQUEST: bad_request_info,
     HTTP_401_UNAUTHORIZED: unauthorized_info,
+    HTTP_403_FORBIDDEN: forbidden_info,
     HTTP_409_CONFLICT: database_conflict_info,
     HTTP_503_SERVICE_UNAVAILABLE: no_database_connection_info
 }
@@ -57,6 +62,7 @@ delete_sleep_goal_responses = {
     HTTP_200_OK: no_body_successful_200_info,
     HTTP_400_BAD_REQUEST: bad_request_info,
     HTTP_401_UNAUTHORIZED: unauthorized_info,
+    HTTP_403_FORBIDDEN: forbidden_info,
     HTTP_404_NOT_FOUND: sleep_goal_not_found_info,
     HTTP_503_SERVICE_UNAVAILABLE: no_database_connection_info
 }
@@ -65,6 +71,7 @@ update_sleep_goal_responses = {
     HTTP_200_OK: no_body_successful_200_info,
     HTTP_400_BAD_REQUEST: bad_request_info,
     HTTP_401_UNAUTHORIZED: unauthorized_info,
+    HTTP_403_FORBIDDEN: forbidden_info,
     HTTP_404_NOT_FOUND: sleep_goal_not_found_info,
     HTTP_409_CONFLICT: database_conflict_info,
     HTTP_503_SERVICE_UNAVAILABLE: no_database_connection_info
@@ -119,7 +126,7 @@ async def update_sleep_goal(body: SleepGoalUpdateRequest,
                             ) -> Response:
     token = credentials.credentials
     payload = decode_access_token(token)
-    updated_sleep_goal_params = body.model_dump(exclude_none=True)
+    updated_sleep_goal_params = body.model_dump(exclude_unset=True)
     if not updated_sleep_goal_params:
         raise no_parameters
 
