@@ -10,6 +10,7 @@ from src.api.schemas.auth import LoginData, CreatedTokens
 from src.api.schemas.users import UserSchema
 from src.api.utils.passwords import validate_password
 from src.api.utils.tokens import create_access_token, create_refresh_token, decode_refresh_token
+from src.api.views import user_not_found
 
 
 async def authenticate_user_by_password(body: LoginData,
@@ -21,7 +22,7 @@ async def authenticate_user_by_password(body: LoginData,
     )
     user = await get_user_by_username(body.username, session)
     if user is None:
-        raise credentials_exception
+        raise user_not_found
 
     if not validate_password(body.password, user.password_hash):
         raise credentials_exception
@@ -37,7 +38,7 @@ async def authenticate_user_by_refresh_token(token: str,
 
     user = await get_user_by_id(payload.sub, session)
     if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise user_not_found
 
     if user.refresh_token_id != payload.jti:
         await update_user_refresh_token_by_id(user.id, None, session)
