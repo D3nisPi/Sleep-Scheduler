@@ -36,7 +36,6 @@ successful_user_read_info = {"model": UserReadResponse, "description": "Successf
 
 get_user_responses = {
     HTTP_200_OK: successful_user_read_info,
-    HTTP_400_BAD_REQUEST: bad_request_info,
     HTTP_401_UNAUTHORIZED: unauthorized_info,
     HTTP_403_FORBIDDEN: forbidden_info,
     HTTP_404_NOT_FOUND: user_not_found_info,
@@ -51,7 +50,6 @@ create_user_responses = {
 
 delete_user_responses = {
     HTTP_200_OK: no_body_successful_200_info,
-    HTTP_400_BAD_REQUEST: bad_request_info,
     HTTP_401_UNAUTHORIZED: unauthorized_info,
     HTTP_403_FORBIDDEN: forbidden_info,
     HTTP_404_NOT_FOUND: user_not_found_info,

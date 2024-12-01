@@ -48,7 +48,6 @@ sleep_note_not_found_info = {"model": CommonErrorResponse, "description": "Sleep
 
 get_sleep_goal_responses = {
     HTTP_200_OK: successful_sleep_note_read_info,
-    HTTP_400_BAD_REQUEST: bad_request_info,
     HTTP_401_UNAUTHORIZED: unauthorized_info,
     HTTP_403_FORBIDDEN: forbidden_info,
     HTTP_404_NOT_FOUND: sleep_note_not_found_info,
@@ -57,7 +56,6 @@ get_sleep_goal_responses = {
 
 create_sleep_goal_responses = {
     HTTP_201_CREATED: no_body_successful_201_info,
-    HTTP_400_BAD_REQUEST: bad_request_info,
     HTTP_401_UNAUTHORIZED: unauthorized_info,
     HTTP_403_FORBIDDEN: forbidden_info,
     HTTP_409_CONFLICT: database_conflict_info,
@@ -66,7 +64,6 @@ create_sleep_goal_responses = {
 
 delete_sleep_note_responses = {
     HTTP_200_OK: no_body_successful_200_info,
-    HTTP_400_BAD_REQUEST: bad_request_info,
     HTTP_401_UNAUTHORIZED: unauthorized_info,
     HTTP_403_FORBIDDEN: forbidden_info,
     HTTP_404_NOT_FOUND: sleep_note_not_found_info,

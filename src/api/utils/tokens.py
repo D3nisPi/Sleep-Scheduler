@@ -43,7 +43,7 @@ def decode_token(token: str) -> dict:
         detail="Invalid token"
     )
     malformed_token = HTTPException(
-        status_code=status.HTTP_400_BAD_REQUEST,
+        status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Malformed token"
     )
 
@@ -65,12 +65,12 @@ def decode_access_token(token: str) -> AccessTokenPayload:
         payload = AccessTokenPayload(**token_data)
     except ValidationError:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token data"
         )
     if payload.type != "access":
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token type. Expected: 'access'"
         )
 
@@ -83,12 +83,12 @@ def decode_refresh_token(token: str) -> RefreshTokenPayload:
         payload = RefreshTokenPayload(**token_data)
     except ValidationError:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token data"
         )
     if payload.type != "refresh":
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token type. Expected: 'refresh'"
         )
 
