@@ -19,8 +19,8 @@ class SleepNoteCreateRequest(BaseSchema):
     note_date: date
     sleep_start: time
     sleep_end: time
-    rating: int | None
-    comment: str | None
+    rating: int | None = Field(..., ge=1, le=5)
+    comment: str | None = Field(..., max_length=300)
 
 
 class SleepNoteReadResponse(BaseSchema):
