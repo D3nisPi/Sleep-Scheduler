@@ -1,5 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from src.api.utils.error_handlers import register_exception_handlers
 from src.api.views.auth import auth_router
@@ -15,6 +16,14 @@ app.include_router(auth_router)
 app.include_router(users_router)
 app.include_router(sleep_goals_router)
 app.include_router(sleep_notes_router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 register_exception_handlers(app)
 
